@@ -17,8 +17,9 @@ jobs:
     - name: Get latest release versions
       id: version
       run: |
-        geoip_ver=$(curl -s "https://api.github.com/repos/Loyalsoldier/geoip/releases/latest" | grep -oP '(?<="tag_name": ")[^"]*')
-        geosite_ver=$(curl -s "https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest" | grep -oP '(?<="tag_name": ")[^"]*')
+        release_info=$(curl -s "https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest")
+        geoip_ver=$(echo "$release_info" | grep -oP '(?<="tag_name": ")[^"]*')
+        geosite_ver=$(echo "$release_info" | grep -oP '(?<="tag_name": ")[^"]*')
         echo "geoip_ver=${geoip_ver}" >> $GITHUB_OUTPUT
         echo "geosite_ver=${geosite_ver}" >> $GITHUB_OUTPUT
 
