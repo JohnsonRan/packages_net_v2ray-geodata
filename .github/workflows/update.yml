@@ -1,0 +1,60 @@
+name: Update Package Version
+
+on:
+  schedule:
+    - cron: '0 0 */7 * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get latest release versions
+      id: version
+      run: |
+        geoip_ver=$(curl -s "https://api.github.com/repos/Loyalsoldier/geoip/releases/latest" | grep -oP '(?<="tag_name": ")[^"]*')
+        geosite_ver=$(curl -s "https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest" | grep -oP '(?<="tag_name": ")[^"]*')
+        echo "geoip_ver=${geoip_ver}" >> $GITHUB_OUTPUT
+        echo "geosite_ver=${geosite_ver}" >> $GITHUB_OUTPUT
+
+    - name: Update Makefile
+      id: update
+      run: |
+        # 更新版本号
+        sed -i "s/GEOIP_VER:=.*/GEOIP_VER:=${geoip_ver}/" Makefile
+        sed -i "s/GEOSITE_VER:=.*/GEOSITE_VER:=${geosite_ver}/" Makefile
+        
+        # 检查是否有变更
+        if ! git diff --quiet; then
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        fi
+      env:
+        geoip_ver: ${{ steps.version.outputs.geoip_ver }}
+        geosite_ver: ${{ steps.version.outputs.geosite_ver }}
+
+    - name: Commit changes
+      if: steps.update.outputs.has_changes == 'true'
+      run: |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git add Makefile
+        git commit -m "geodata: update geoip to ${geoip_ver}, geosite to ${geosite_ver}"
+        git push
+      env:
+        geoip_ver: ${{ steps.version.outputs.geoip_ver }}
+        geosite_ver: ${{ steps.version.outputs.geosite_ver }}
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        retain_days: 0
+        keep_minimum_runs: 2
