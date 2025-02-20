@@ -12,19 +12,19 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 include $(INCLUDE_DIR)/package.mk
 
-GEOIP_VER:=202502182212
-GEOIP_FILE:=geoip.dat.$(GEOIP_VER)
+GEOX_VER:=20250220
+
+GEOIP_FILE:=geoip.dat
 define Download/geoip
-  URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/$(GEOIP_VER)/
-  URL_FILE:=geoip.dat
+  URL:=https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/
+  URL_FILE:=geoip-lite.dat
   FILE:=$(GEOIP_FILE)
   HASH:=skip
 endef
 
-GEOSITE_VER:=202502182212
-GEOSITE_FILE:=dlc.dat.$(GEOSITE_VER)
+GEOSITE_FILE:=geosite.dat
 define Download/geosite
-  URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/$(GEOSITE_VER)/
+  URL:=https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/
   URL_FILE:=geosite.dat
   FILE:=$(GEOSITE_FILE)
   HASH:=skip
@@ -51,7 +51,7 @@ define Package/v2ray-geoip
   $(call Package/v2ray-geodata/template)
   TITLE:=GeoIP List for V2Ray
   PROVIDES:=v2ray-geodata xray-geodata xray-geoip
-  VERSION:=$(GEOIP_VER)-r$(PKG_RELEASE)
+  VERSION:=$(GEOX_VER)-r$(PKG_RELEASE)
   LICENSE:=CC-BY-SA-4.0
 endef
 
@@ -59,7 +59,7 @@ define Package/v2ray-geosite
   $(call Package/v2ray-geodata/template)
   TITLE:=Geosite List for V2Ray
   PROVIDES:=v2ray-geodata xray-geodata xray-geosite
-  VERSION:=$(GEOSITE_VER)-r$(PKG_RELEASE)
+  VERSION:=$(GEOX_VER)-r$(PKG_RELEASE)
   LICENSE:=MIT
 endef
 
