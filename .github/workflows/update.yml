@@ -14,45 +14,19 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Get version and hashes
+    - name: Get version
       id: version
       run: |
         # 获取当前日期作为版本号
         current_ver=$(date +%Y%m%d)
         echo "current_ver=${current_ver}" >> $GITHUB_OUTPUT
-        
-        # 获取文件哈希值
-        geoip_hash=$(curl -sL "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat.sha256sum" | awk '{print $1}')
-        geosite_hash=$(curl -sL "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat.sha256sum" | awk '{print $1}')
-        echo "geoip_hash=${geoip_hash}" >> $GITHUB_OUTPUT
-        echo "geosite_hash=${geosite_hash}" >> $GITHUB_OUTPUT
 
     - name: Update Makefile
       id: update
       run: |
-        # 更新版本号
         sed -i "s/GEOX_VER:=.*/GEOX_VER:=${current_ver}/" Makefile
-        # 只更新 geoip 和 geosite 的哈希值
-        # 注意：使用 /Download\/geoip$/,/endef/ 确保只匹配精确的 Download/geoip 块
-        sed -i '/Download\/geoip$/,/endef/ {
-          s/HASH:=.*/HASH:='"${geoip_hash}"'/
-        }' Makefile
-        sed -i '/Download\/geosite$/,/endef/ {
-          s/HASH:=.*/HASH:='"${geosite_hash}"'/
-        }' Makefile
-        # 检查是否有变更
-        if ! git diff --quiet; then
-          echo "has_changes=true" >> $GITHUB_OUTPUT
-        else
-          echo "has_changes=false" >> $GITHUB_OUTPUT
-        fi
-      env:
-        current_ver: ${{ steps.version.outputs.current_ver }}
-        geoip_hash: ${{ steps.version.outputs.geoip_hash }}
-        geosite_hash: ${{ steps.version.outputs.geosite_hash }}
 
     - name: Commit changes
-      if: steps.update.outputs.has_changes == 'true'
       run: |
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"

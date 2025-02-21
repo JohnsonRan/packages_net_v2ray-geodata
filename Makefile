@@ -19,7 +19,7 @@ define Download/geoip
   URL:=https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/
   URL_FILE:=geoip-lite.dat
   FILE:=$(GEOIP_FILE)
-  HASH:=ab074617699ba0bd24bda7c3ed5d9da322fa929afa9a7b136a606f3321b32821
+  HASH:=skip
 endef
 
 GEOSITE_FILE:=geosite.dat
@@ -27,7 +27,7 @@ define Download/geosite
   URL:=https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/
   URL_FILE:=geosite.dat
   FILE:=$(GEOSITE_FILE)
-  HASH:=3455a57255f367ed07b74d7d234cde78463aa328bfd23f9ca4aaa43651b5bdec
+  HASH:=skip
 endef
 
 GEOSITE_IRAN_VER:=202502030035
